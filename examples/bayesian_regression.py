@@ -22,7 +22,7 @@ from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 from dataset import Dataset
 
 
-class DGP:
+class DMGP:
     def __init__(self, input_dim, output_dim,
                  design_class, kernel,
                  num_mc=1, num_monte_carlo=10, batch_size=128,
@@ -55,9 +55,9 @@ class DGP:
         self.activation = activation
 
         if option == 'grid':
-            self.model = simple_dgp.SDGPgrid(input_dim, output_dim, design_class, kernel).to(self.device)
+            self.model = simple_dgp.DMGPgrid(input_dim, output_dim, design_class, kernel).to(self.device)
         else:
-            self.model = simple_dgp.SDGPadditive(input_dim, output_dim, design_class, kernel).to(self.device)
+            self.model = simple_dgp.DMGPadditive(input_dim, output_dim, design_class, kernel).to(self.device)
 
         self.reset_optimizer_scheduler()  # do not delete this
 
@@ -234,11 +234,11 @@ def main():
         os.makedirs(args.save_dir)
 
     ############################################################################################################
-    model = DGP(input_dim=inputs.shape[-1], output_dim=1,
-                design_class=HyperbolicCrossDesign,
-                kernel=LaplaceProductKernel(lengthscale=1.),
-                batch_size=args.batch_size, lr=args.lr, gamma=args.gamma,
-                use_cuda=True, option=args.model)
+    model = DMGP(input_dim=inputs.shape[-1], output_dim=1,
+                 design_class=HyperbolicCrossDesign,
+                 kernel=LaplaceProductKernel(lengthscale=1.),
+                 batch_size=args.batch_size, lr=args.lr, gamma=args.gamma,
+                 use_cuda=True, option=args.model)
 
     print(args.mode)
     if args.mode == 'train':

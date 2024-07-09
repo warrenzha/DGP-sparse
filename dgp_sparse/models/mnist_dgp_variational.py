@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from dgp_sparse.layers import LinearReparameterization, Conv2dReparameterization
+from dgp_sparse.layers import LinearReparameterization
 from dgp_sparse.layers import AMGP, TMGP
 
 prior_mu = 0.0
@@ -18,10 +18,10 @@ class DAMGPmnist(nn.Module):
                  output_dim,
                  design_class, 
                  kernel,
-                 activation=None):
+                 option='additive'):
         super(DAMGPmnist, self).__init__()
 
-        self.activation = activation
+        self.option = option
 
         w0 = 64
         self.fc0 = LinearReparameterization(
@@ -38,8 +38,8 @@ class DAMGPmnist(nn.Module):
         ## 1st layer of DGP: input:[n, input_dim] size tensor, output:[n, w1] size tensor
         #################################################################################
         # return [n, m1] size tensor for [n, input_dim] size input and [m1, input_dim] size sparse grid
-        self.tmk1 = AMGP(in_features=w0, n_level=5, design_class=design_class, kernel=kernel)
-        m1 = self.tmk1.out_features # m1 = input_dim*(2^n_level-1)
+        self.gp1 = AMGP(in_features=w0, n_level=5, design_class=design_class, kernel=kernel)
+        m1 = self.gp1.out_features # m1 = input_dim*(2^n_level-1)
         w1 = 64
         # return [n, w1] size tensor for [n, m1] size input and [m1, w1] size weights
         self.fc1 = LinearReparameterization(
@@ -56,8 +56,8 @@ class DAMGPmnist(nn.Module):
         ## 2nd layer of DGP: input:[n, w1] size tensor, output:[n, w2] size tensor
         #################################################################################
         # return [n, m2] size tensor for [n, w1] size input and [m2, w1] size sparse grid
-        self.tmk2 = AMGP(in_features=w1, n_level=5, design_class=design_class, kernel=kernel)
-        m2 = self.tmk2.out_features # m2 = w1*(2^n_level-1)
+        self.gp2 = AMGP(in_features=w1, n_level=5, design_class=design_class, kernel=kernel)
+        m2 = self.gp2.out_features # m2 = w1*(2^n_level-1)
         w2 = output_dim
         # return [n, w2] size tensor for [n, m2] size input and [m2, w2] size weights
         self.fc2 = LinearReparameterization(
@@ -76,20 +76,16 @@ class DAMGPmnist(nn.Module):
         x = torch.flatten(x, 1)
         x, kl = self.fc0(x)
         kl_sum += kl
-        # x = F.relu(x)
 
-        x = self.tmk1(x)
+        x = self.gp1(x)
         x, kl = self.fc1(x)
         kl_sum += kl
 
-        x = self.tmk2(x)
+        x = self.gp2(x)
         x, kl = self.fc2(x)
         kl_sum += kl
 
-        if self.activation is None:
-            output = F.log_softmax(x, dim=1)
-        else:
-            output = self.activation(x)  # attention, this only regress non-negative values TODO XXX
+        output = F.log_softmax(x, dim=1)
         return output, kl_sum
 
 
@@ -99,10 +95,10 @@ class DTMGPmnist(nn.Module):
                  output_dim,
                  design_class,
                  kernel,
-                 activation=None):
+                 option='grid'):
         super(DTMGPmnist, self).__init__()
 
-        self.activation = activation
+        self.option = option
 
         w0 = 8
         self.fc0 = LinearReparameterization(
@@ -119,8 +115,8 @@ class DTMGPmnist(nn.Module):
         ## 1st layer of DGP: input:[n, input_dim] size tensor, output:[n, w1] size tensor
         #################################################################################
         # return [n, m1] size tensor for [n, input_dim] size input and [m1, input_dim] size sparse grid
-        self.tmk1 = TMGP(in_features=w0, n_level=3, design_class=design_class, kernel=kernel)
-        m1 = self.tmk1.out_features
+        self.gp1 = TMGP(in_features=w0, n_level=3, design_class=design_class, kernel=kernel)
+        m1 = self.gp1.out_features
         w1 = 8
         # return [n, w1] size tensor for [n, m1] size input and [m1, w1] size weights
         self.fc1 = LinearReparameterization(
@@ -137,8 +133,8 @@ class DTMGPmnist(nn.Module):
         ## 2nd layer of DGP: input:[n, w1] size tensor, output:[n, w2] size tensor
         #################################################################################
         # return [n, m2] size tensor for [n, w1] size input and [m2, w1] size sparse grid
-        self.tmk2 = TMGP(in_features=w1, n_level=3, design_class=design_class, kernel=kernel)
-        m2 = self.tmk2.out_features
+        self.gp2 = TMGP(in_features=w1, n_level=3, design_class=design_class, kernel=kernel)
+        m2 = self.gp2.out_features
         w2 = output_dim
         # return [n, w2] size tensor for [n, m2] size input and [m2, w2] size weights
         self.fc2 = LinearReparameterization(
@@ -159,16 +155,13 @@ class DTMGPmnist(nn.Module):
         kl_sum += kl
         x = F.relu(x)
 
-        x = self.tmk1(x)
+        x = self.gp1(x)
         x, kl = self.fc1(x)
         kl_sum += kl
 
-        x = self.tmk2(x)
+        x = self.gp2(x)
         x, kl = self.fc2(x)
         kl_sum += kl
 
-        if self.activation is None:
-            output = F.log_softmax(x, dim=1)
-        else:
-            output = self.activation(x)  # attention, this only regress non-negative values TODO XXX
+        output = F.log_softmax(x, dim=1)
         return output, kl_sum

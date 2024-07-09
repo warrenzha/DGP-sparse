@@ -46,7 +46,7 @@ $ python bayesian_mnist.py --model [additive_grid_model]
 ### Define your custom model
 ``` python
 import torch
-import dgp_sparse.models.SDGPgrid as DMGP
+import dgp_sparse.models.DMGPgrid as DMGP
 from dgp_sparse.utils.sparse_activation.design_class import HyperbolicCrossDesign
 from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 

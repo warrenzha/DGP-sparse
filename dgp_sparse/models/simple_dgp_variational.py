@@ -2,6 +2,7 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from dgp_sparse.layers.linear import LinearReparameterization
 from dgp_sparse.layers.activation import TMGP, AMGP
 
@@ -11,14 +12,14 @@ posterior_mu_init = 0.0
 posterior_rho_init = -3.0
 
 
-class SDGPgrid(nn.Module):
+class DMGPgrid(nn.Module):
     def __init__(self, 
                  input_dim, 
                  output_dim,
                  design_class, 
                  kernel,
                  activation=F.relu):
-        super(SDGPgrid, self).__init__()
+        super(DMGPgrid, self).__init__()
 
         self.activation = activation
 
@@ -98,14 +99,14 @@ class SDGPgrid(nn.Module):
         return torch.squeeze(output), kl_sum
 
 
-class SDGPadditive(nn.Module):
+class DMGPadditive(nn.Module):
     def __init__(self,
                  input_dim,
                  output_dim,
                  design_class,
                  kernel,
                  activation=F.relu):
-        super(SDGPadditive, self).__init__()
+        super(DMGPadditive, self).__init__()
 
         self.activation = activation
 
