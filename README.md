@@ -27,46 +27,38 @@ pip install .
 ## Usage
 There are two ways to build sparse DGPs using DGP-sparse: 
 1. Load a pre-trained model from the library
-2. Define your custom model using the Bayesian layers provided in the library
+2. Define your custom model with modules provided in the library
 
 ### Load a pre-trained model
 ```bash
-$ cd examples/mnist
-$ python bayesian_dtmgp_mnist.py --model [additive_grid_model]
-                                 --error-bar [plot_errorbar]
-                                 --subset-size [training_subset]
-                                 --batch-size [batch_size]
-                                 --test-batch-size [test_batch_size]
-                                 --epochs [epochs]
-                                 --lr [learning_rate]
-                                 --gamma [learning_rate_step_gamma]
-                                 --no-cuda [disable_cuda]
-                                 --seed [random_seed]
-                                 --log-interval [num_batches_log]
-                                 --save_dir [save_directory]
-                                 --mode [train_test_mode]
-                                 --num_monte_carlo [num_monte_carlo_inference]
-                                 --num_mc [num_monte_carlo_training]
-                                 --tensorboard [tensorboard_action]
-                                 --log_dir [logs_directory]
+$ cd examples
+$ python bayesian_mnist.py --model [additive_grid_model]
+                           --mode [train_test_mode]
+                           --batch-size [batch_size]
+                           --epochs [epochs]
+                           --lr [learning_rate]
+                           --save_dir [save_directory] 
+                           --num_monte_carlo [num_monte_carlo_inference]
+                           --num_mc [num_monte_carlo_training]
+                           --log_dir [logs_directory]
 ```
 
 ### Define your custom model
 ``` python
 import torch
-from mamba_ssm import Mamba
+import dgp_sparse.models.SDGPgrid as DMGP
+from dgp_sparse.utils.sparse_activation.design_class import HyperbolicCrossDesign
+from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 
-batch, length, dim = 2, 64, 16
-x = torch.randn(batch, length, dim).to("cuda")
-model = Mamba(
-    # This module uses roughly 3 * expand * d_model^2 parameters
-    d_model=dim, # Model dimension d_model
-    d_state=16,  # SSM state expansion factor
-    d_conv=4,    # Local convolution width
-    expand=2,    # Block expansion factor
+batch, dim = 1000, 7
+x = torch.randn(batch, dim).to("cuda")
+model = DMGP(
+    input_dim = dim,
+    output_dim = 1,
+    design_class = HyperbolicCrossDesign,
+    kernel = LaplaceProductKernel(lengthscale=1.)
 ).to("cuda")
 y = model(x)
-assert y.shape == x.shape
 ```
 
 ## Citing Us
