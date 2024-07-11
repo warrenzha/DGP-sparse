@@ -19,7 +19,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader, Subset, SubsetRandomSampler
 
 from dgp_sparse.models import DAMGPmnist, DTMGPmnist
-from dgp_sparse.utils.sparse_activation.design_class import HyperbolicCrossDesign
+from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign
 from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 
 len_trainset = 60000

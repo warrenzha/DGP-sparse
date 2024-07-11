@@ -1,10 +1,8 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
-from dgp_sparse.layers.functional import MinMax
-from dgp_sparse.utils.sparse_activation.design_class import HyperbolicCrossDesign, SparseGridDesign
+from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign, SparseGridDesign
 from dgp_sparse.utils.operators.chol_inv import mk_chol_inv, tmk_chol_inv
 
 __all__ = [
@@ -46,7 +44,6 @@ class TMGP(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        # self.ln1 = MinMax()
         self.ln1 = nn.LayerNorm(in_features)
 
         if in_features == 1:  # one-dimension TMGP
@@ -114,7 +111,6 @@ class AMGP(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        # self.ln1 = MinMax()
         self.ln1 = nn.LayerNorm(in_features)
 
         dyadic_design = design_class(dyadic_sort=True, return_neighbors=True)(deg=n_level, input_lb=input_lb, input_ub=input_ub)

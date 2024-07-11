@@ -4,7 +4,11 @@ import torch.nn.functional as F
 
 __all__ = [
     'ReLU',
+    'ReLUN',
     'MinMax',
+    'relu',
+    'relu_n',
+    'minmax',
 ]
 
 
@@ -110,5 +114,13 @@ class MinMax(nn.Module):
         return out
 
 
+def relu(input, inplace=False):
+    return ReLU(inplace)(input)
+
+def relu_n(input, upper=1, inplace=False):
+    return ReLUN(upper, inplace)(input)
+
 def minmax(input, lengthscale=1., bias=0., eps=1e-05):
     return MinMax(lengthscale, bias, eps)(input)
+
+

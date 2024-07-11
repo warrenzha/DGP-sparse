@@ -4,7 +4,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from dgp_sparse.layers import LinearReparameterization, Conv2dReparameterization
-from dgp_sparse.layers import AMGP, TMGP
+from dgp_sparse.layers import AMGP
+
+__all__ = ['DMGPcifar']
 
 prior_mu = 0.0
 prior_sigma = 1.0

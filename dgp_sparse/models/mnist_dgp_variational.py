@@ -6,6 +6,11 @@ import torch.nn.functional as F
 from dgp_sparse.layers import LinearReparameterization
 from dgp_sparse.layers import AMGP, TMGP
 
+__all__ = [
+    'DAMGPmnist',
+    'DTMGPmnist',
+]
+
 prior_mu = 0.0
 prior_sigma = 1.0
 posterior_mu_init = 0.0

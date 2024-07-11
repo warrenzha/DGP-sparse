@@ -1,2 +1,2 @@
 from .operators import *
-from .sparse_activation import *
+from .sparse_design import *

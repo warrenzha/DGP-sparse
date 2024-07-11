@@ -5,6 +5,8 @@ import torch.nn.functional as F
 
 from dgp_sparse.layers.linear import LinearReparameterization
 
+__all__ = ['SFC']
+
 prior_mu = 0.0
 prior_sigma = 1.0
 posterior_mu_init = 0.0
