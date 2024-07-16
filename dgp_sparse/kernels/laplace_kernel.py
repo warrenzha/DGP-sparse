@@ -1,10 +1,39 @@
-from typing import Optional
+# Copyright (c) 2024 Wenyuan Zhao, Haoyuan Chen
+#
+# MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# Laplace kernel functions for deep Gaussian processes
+#
+# @authors: Haoyuan Chen, Wenyuan Zhao
+#
+# ===============================================================================================
 
+
+from typing import Optional
 import torch
 from torch import Tensor
+import torch.nn as nn
 
 
-class LaplaceProductKernel(torch.nn.Module):
+class LaplaceProductKernel(nn.Module):
     r"""
     Computes a covariance matrix based on the Laplace product kernel 
     between inputs :math:`\mathbf{x_1}` and :math:`\mathbf{x_2}`:
@@ -92,7 +121,7 @@ class LaplaceProductKernel(torch.nn.Module):
         return res
 
 
-class LaplaceAdditiveKernel(torch.nn.Module):
+class LaplaceAdditiveKernel(nn.Module):
     r"""
     Computes a covariance matrix based on the Laplace additive kernel 
     between inputs :math:`\mathbf{x_1}` and :math:`\mathbf{x_2}`:
@@ -149,7 +178,7 @@ class LaplaceAdditiveKernel(torch.nn.Module):
 
         # Type checking
         if isinstance(lengthscale, (int, float)):
-            lengthscale = x1.new_full(size=(d,), fill_value=lengthscale, dtype=x1.dtype)    # [d,] torch.Tensor([1., 1.,.., 1.])
+            lengthscale = x1.new_full(size=(d,), fill_value=lengthscale, dtype=x1.dtype)    # torch.Tensor([1., 1.,.., 1.]) of size [d,]
         
         if isinstance(lengthscale, Tensor):
             if lengthscale.ndimension() == 0 or max(lengthscale.size()) == 1:
@@ -159,7 +188,7 @@ class LaplaceAdditiveKernel(torch.nn.Module):
         
         lengthscale = lengthscale.reshape(-1)
 
-        adjustment = x1.mean(dim=-2, keepdim=True) # [d] size tensor
+        adjustment = x1.mean(dim=-2, keepdim=True) # tensor of size [d,]
         x1_ = (x1 - adjustment).div(lengthscale)
         x2_ = (x2 - adjustment).div(lengthscale)
         x1_eq_x2 = torch.equal(x1_, x2_)

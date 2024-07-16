@@ -29,7 +29,7 @@ __all__ = [
     "ReLU",
     "ReLUN",
     "MinMax",
-    "TMGP",
-    "AMGP",
+    "TMK",
+    "AMK",
     "functional",
 ]

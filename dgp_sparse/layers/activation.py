@@ -1,18 +1,46 @@
+# Copyright (c) 2024 Wenyuan Zhao, Haoyuan Chen
+#
+# MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# GP activations for deep Gaussian processes
+#
+# @authors: Haoyuan Chen, Wenyuan Zhao
+#
+# ===============================================================================================
+
+
 import torch
 import torch.nn as nn
-
 from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign, SparseGridDesign
 from dgp_sparse.utils.operators.chol_inv import mk_chol_inv, tmk_chol_inv
 
 __all__ = [
-    'TMGP',
-    'AMGP',
+    'TMK',
+    'AMK',
 ]
 
 
-class TMGP(nn.Module):
-    """
+class TMK(nn.Module):
+    r"""
     Implements tensor markov GP as an activation layer using sparse grid structure.
 
     .. math::
@@ -44,7 +72,7 @@ class TMGP(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        self.ln1 = nn.LayerNorm(in_features)
+        self.norm = nn.LayerNorm(in_features)
 
         if in_features == 1:  # one-dimension TMGP
             dyadic_design = design_class(dyadic_sort=True, return_neighbors=True)(deg=n_level, input_lb=input_lb, input_ub=input_ub)
@@ -71,15 +99,15 @@ class TMGP(nn.Module):
 
         :return: [n,m] size tensor, kernel(input, sparse_grid) @ chol_inv
         """
-        out = self.ln1(x)
+        out = self.norm(x)
         out = self.kernel(out, self.design_points)  # [n, m] size tenosr
         out = out @ self.chol_inv  # [n, m] size tensor
 
         return out
 
 
-class AMGP(nn.Module):
-    """
+class AMK(nn.Module):
+    r"""
     Implements tensor markov GP as an activation layer using additive structure.
 
     .. math::
@@ -111,7 +139,7 @@ class AMGP(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        self.ln1 = nn.LayerNorm(in_features)
+        self.norm = nn.LayerNorm(in_features)
 
         dyadic_design = design_class(dyadic_sort=True, return_neighbors=True)(deg=n_level, input_lb=input_lb, input_ub=input_ub)
         chol_inv = mk_chol_inv(dyadic_design=dyadic_design, markov_kernel=kernel, upper=True)  # [m, m] size tensor
@@ -132,7 +160,7 @@ class AMGP(nn.Module):
         :return: [n,m*d] size tensor, kernel(input, sparse_grid) @ chol_inv
         """
 
-        out = self.ln1(x)
+        out = self.norm(x)
         out = torch.flatten(out, start_dim=1)  # flatten x of size [...,n,d] --> size [...,n*d]
         out = out.unsqueeze(dim=-1)  # add new dimension, x of size [...,n*d] --> size [...,n*d, 1]
         out = self.kernel(out, self.design_points)  # [...,n*d, m] size tenosr

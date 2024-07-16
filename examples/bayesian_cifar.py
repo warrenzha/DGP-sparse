@@ -5,7 +5,7 @@ from pathlib import Path  # if you haven't already done so
 file = Path(os.path.dirname(os.path.abspath(__file__))).resolve()
 parent, root = file.parent, file.parents[1]
 sys.path.append(str(root))
-import time
+
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -295,7 +295,6 @@ def main():
                       design_class=HyperbolicCrossDesign,
                       kernel=LaplaceProductKernel(1.)).to(device)
 
-    start = time.time()
     print(args.mode)
     if args.mode == 'train':
 
@@ -324,9 +323,6 @@ def main():
             checkpoint = args.save_dir + '/cifar_bayesian_dgp_add.pth'
         model.load_state_dict(torch.load(checkpoint))
         evaluate(args, model, device, test_loader, args.error_bar)
-
-    end = time.time()
-    print("done. Total time: " + str(end - start))
 
 
 if __name__ == '__main__':

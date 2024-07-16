@@ -156,11 +156,10 @@ def main():
                         type=str,
                         default='additive',
                         help='additive | grid')
-    parser.add_argument('--subset-size',
-                        type=int,
-                        default=60000,
-                        metavar='N',
-                        help='the size of the training subset')
+    parser.add_argument('--mode',
+                        type=str,
+                        default='train',
+                        help='train | test')
     parser.add_argument('--batch-size',
                         type=int,
                         default=64,
@@ -171,6 +170,11 @@ def main():
                         default=10000,
                         metavar='N',
                         help='input batch size for testing (default: 10000)')
+    parser.add_argument('--subset-size',
+                        type=int,
+                        default=60000,
+                        metavar='N',
+                        help='the size of the training subset')
     parser.add_argument('--epochs',
                         type=int,
                         default=14,
@@ -203,10 +207,6 @@ def main():
     parser.add_argument('--save_dir',
                         type=str,
                         default='./checkpoint/bayesian')
-    parser.add_argument('--mode',
-                        type=str,
-                        default='train',
-                        help='train | test')
     parser.add_argument('--num_monte_carlo',
                         type=int,
                         default=20,

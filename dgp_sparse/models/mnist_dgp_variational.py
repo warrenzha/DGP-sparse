@@ -1,10 +1,37 @@
+# Copyright (c) 2024 Wenyuan Zhao, Haoyuan Chen
+#
+# MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# @authors: Wenyuan Zhao, Haoyuan Chen.
+#
+# ===============================================================================================
+
+
 from __future__ import print_function
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 from dgp_sparse.layers import LinearReparameterization
-from dgp_sparse.layers import AMGP, TMGP
+from dgp_sparse.layers import AMK, TMK
 
 __all__ = [
     'DAMGPmnist',
@@ -43,7 +70,7 @@ class DAMGPmnist(nn.Module):
         ## 1st layer of DGP: input:[n, input_dim] size tensor, output:[n, w1] size tensor
         #################################################################################
         # return [n, m1] size tensor for [n, input_dim] size input and [m1, input_dim] size sparse grid
-        self.gp1 = AMGP(in_features=w0, n_level=5, design_class=design_class, kernel=kernel)
+        self.gp1 = AMK(in_features=w0, n_level=5, design_class=design_class, kernel=kernel)
         m1 = self.gp1.out_features # m1 = input_dim*(2^n_level-1)
         w1 = 64
         # return [n, w1] size tensor for [n, m1] size input and [m1, w1] size weights
@@ -61,7 +88,7 @@ class DAMGPmnist(nn.Module):
         ## 2nd layer of DGP: input:[n, w1] size tensor, output:[n, w2] size tensor
         #################################################################################
         # return [n, m2] size tensor for [n, w1] size input and [m2, w1] size sparse grid
-        self.gp2 = AMGP(in_features=w1, n_level=5, design_class=design_class, kernel=kernel)
+        self.gp2 = AMK(in_features=w1, n_level=5, design_class=design_class, kernel=kernel)
         m2 = self.gp2.out_features # m2 = w1*(2^n_level-1)
         w2 = output_dim
         # return [n, w2] size tensor for [n, m2] size input and [m2, w2] size weights
@@ -120,7 +147,7 @@ class DTMGPmnist(nn.Module):
         ## 1st layer of DGP: input:[n, input_dim] size tensor, output:[n, w1] size tensor
         #################################################################################
         # return [n, m1] size tensor for [n, input_dim] size input and [m1, input_dim] size sparse grid
-        self.gp1 = TMGP(in_features=w0, n_level=3, design_class=design_class, kernel=kernel)
+        self.gp1 = TMK(in_features=w0, n_level=3, design_class=design_class, kernel=kernel)
         m1 = self.gp1.out_features
         w1 = 8
         # return [n, w1] size tensor for [n, m1] size input and [m1, w1] size weights
@@ -138,7 +165,7 @@ class DTMGPmnist(nn.Module):
         ## 2nd layer of DGP: input:[n, w1] size tensor, output:[n, w2] size tensor
         #################################################################################
         # return [n, m2] size tensor for [n, w1] size input and [m2, w1] size sparse grid
-        self.gp2 = TMGP(in_features=w1, n_level=3, design_class=design_class, kernel=kernel)
+        self.gp2 = TMK(in_features=w1, n_level=3, design_class=design_class, kernel=kernel)
         m2 = self.gp2.out_features
         w2 = output_dim
         # return [n, w2] size tensor for [n, m2] size input and [m2, w2] size weights

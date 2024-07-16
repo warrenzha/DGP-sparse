@@ -32,8 +32,8 @@ There are two ways to build sparse DGPs using DGP-sparse:
 ### Load a pre-trained model
 ```bash
 $ cd examples
-$ python bayesian_mnist.py --model [additive_grid_model]
-                           --mode [train_test_mode]
+$ python bayesian_mnist.py --model [additive]
+                           --mode [test]
                            --batch-size [batch_size]
                            --epochs [epochs]
                            --lr [learning_rate]
@@ -46,17 +46,23 @@ $ python bayesian_mnist.py --model [additive_grid_model]
 ### Define your custom model
 ``` python
 import torch
-import dgp_sparse.models.DMGPgrid as DMGP
-from dgp_sparse.utils.sparse_activation.design_class import HyperbolicCrossDesign
-from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
+from dgp_sparse.layers import LinearFlipout
+from dgp_sparse.kernels import LaplaceProductKernel
+from dgp_sparse.utils.sparse_design import HyperbolicCrossDesign
+from dgp_sparse.models import DMGP
 
 batch, dim = 1000, 7
 x = torch.randn(batch, dim).to("cuda")
 model = DMGP(
     input_dim = dim,
     output_dim = 1,
+    num_layers = 2,
+    num_inducing = 3,
+    hidden_dim = 64,
+    kernel = LaplaceProductKernel(lengthscale=1.),
     design_class = HyperbolicCrossDesign,
-    kernel = LaplaceProductKernel(lengthscale=1.)
+    layer_type = LinearFlipout,
+    option = 'additive',
 ).to("cuda")
 y = model(x)
 ```
@@ -87,7 +93,7 @@ A Sparse Expansion for Deep Gaussian Processes
   publisher={Taylor \& Francis}
 }
 ```
-Bayesian-Torch
+Some BNN implementation is based on [Bayesian-Torch](https://github.com/IntelLabs/bayesian-torch)
 ```bibtex
 @software{krishnan2022bayesiantorch,
   author       = {Ranganath Krishnan and Pi Esposito and Mahesh Subedar},               
