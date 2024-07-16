@@ -26,28 +26,21 @@ Customize your model
 
    import torch
    import torch.nn as nn
-   from dgp_sparse.models import DGP
-   from dgp_sparse.likelihoods import Gaussian
-   from dgp_sparse.kernels import RBF
-   from dgp_sparse.layers import SVGPLayer, SVGPLayer
-   from dgp_sparse.models import DGP
-   from dgp_sparse.likelihoods import Gaussian
-   from dgp_sparse.kernels import RBF
-   from dgp_sparse.layers import SVGPLayer, SVGPLayer
+   from dgp_sparse.models import DMGP
+   from dgp_sparse.kernels import LaplaceProductKernel
+   from dgp_sparse.utils import HyperbolicCrossDesign
+   from dgp_sparse.layers import AMGP, LinearFlipout
 
    # Define the model
-   model = DGP(
-       num_layers=3,
-       num_inducing=100,
+   model = DMGP(
        input_dim=784,
        output_dim=10,
-       hidden_dims=[100, 100],
-       likelihood=Gaussian(),
-       kernel=RBF(),
-       inducing_points=torch.randn(100, 784),
-       layer_type=SVGPLayer,
-       mean_layer=SVGPLayer,
-       num_samples=10,
+       num_layers=3,
+       num_inducing=4,
+       hidden_dim=64,
+       kernel=LaplaceProductKernel(),
+       design_class=HyperbolicCrossDesign,
+       layer_type=LinearFlipout,
    )
 
    # Define the loss

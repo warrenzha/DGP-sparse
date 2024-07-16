@@ -18,7 +18,8 @@ from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader, Subset, SubsetRandomSampler
 
-from dgp_sparse.models import DAMGPmnist, DTMGPmnist
+from dgp_sparse.models import DMGP
+from dgp_sparse.layers import LinearReparameterization, LinearFlipout
 from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign
 from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 
@@ -39,9 +40,10 @@ def train(args, model, device, train_loader, optimizer, epoch, tb_writer=None):
             kl_.append(kl)
         output = torch.mean(torch.stack(output_), dim=0)
         kl = torch.mean(torch.stack(kl_), dim=0)
-        nll_loss = F.nll_loss(output, target)
+        cross_entropy_loss = F.cross_entropy(output, target)
+        scaled_kl = kl / args.batch_size
         # ELBO loss
-        loss = nll_loss + (kl / args.batch_size)
+        loss = cross_entropy_loss + scaled_kl
 
         loss.backward()
         optimizer.step()
@@ -64,7 +66,7 @@ def test(args, model, device, test_loader, epoch, tb_writer=None):
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
             output, kl = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum').item() + (
+            test_loss += F.cross_entropy(output, target, reduction='sum').item() + (
                     kl / args.batch_size)  # sum up batch loss
             pred = output.argmax(
                 dim=1,
@@ -215,6 +217,21 @@ def main():
                         default=1,
                         metavar='N',
                         help='number of Monte Carlo runs during training')
+    parser.add_argument('--num_layers',
+                        type=int,
+                        default=2,
+                        metavar='N',
+                        help='depth of the model')
+    parser.add_argument('--num_inducing',
+                        type=int,
+                        default=3,
+                        metavar='N',
+                        help='number of inducing levels')
+    parser.add_argument('--hidden_dim',
+                        type=int,
+                        default=64,
+                        metavar='N',
+                        help='hidden dim of the hidden layers')
     parser.add_argument('--error-bar',
                         type=bool,
                         default=True,
@@ -289,16 +306,15 @@ def main():
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
 
-    if args.model == 'additive':
-        model = DAMGPmnist(input_dim=784,
-                           output_dim=10,
-                           design_class=HyperbolicCrossDesign,
-                           kernel=LaplaceProductKernel(1.)).to(device)
-    else:
-        model = DTMGPmnist(input_dim=784,
-                           output_dim=10,
-                           design_class=HyperbolicCrossDesign,
-                           kernel=LaplaceProductKernel(1.)).to(device)
+    model = DMGP(input_dim=784,
+                 output_dim=10,
+                 num_layers=args.num_layers,
+                 num_inducing=args.num_inducing,
+                 hidden_dim=args.hidden_dim,
+                 kernel=LaplaceProductKernel(1.),
+                 design_class=HyperbolicCrossDesign,
+                 layer_type=LinearFlipout,
+                 option=args.model).to(device)
 
     print(args.mode)
     if args.mode == 'train':

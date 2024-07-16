@@ -16,23 +16,24 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
 
-import dgp_sparse.models.simple_dgp_variational as simple_dgp
+import dgp_sparse.models.dmgp_variational as simple_dgp
 from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign
 from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 from dataset import Dataset
 
 
-class DMGP:
+class DMGPregression:
     def __init__(self, input_dim, output_dim,
                  design_class, kernel,
                  num_mc=1, num_monte_carlo=10, batch_size=128,
                  lr=1.0,
                  gamma=0.999,
-                 activation=None,
-                 inverse_y=False,
+                 num_layers=2,
+                 num_inducing=4,
+                 hidden_dim=64,
                  seed=1,
                  use_cuda=True,
-                 option='grid',
+                 option='additive',
                  ):
 
         if torch.cuda.is_available() and use_cuda:
@@ -46,18 +47,18 @@ class DMGP:
 
         self.lr = lr
         self.gamma = gamma
-        self.inverse_y = inverse_y
 
         self.batch_size = batch_size
         self.num_mc = num_mc
         self.num_monte_carlo = num_monte_carlo
 
-        self.activation = activation
+        self.model = simple_dgp.DMGP(input_dim, output_dim, num_layers, num_inducing, hidden_dim, kernel, design_class,
+                                     option=option).to(self.device)
 
-        if option == 'grid':
-            self.model = simple_dgp.DMGPgrid(input_dim, output_dim, design_class, kernel).to(self.device)
-        else:
-            self.model = simple_dgp.DMGPadditive(input_dim, output_dim, design_class, kernel).to(self.device)
+        # if option == 'grid':
+        #     self.model = simple_dgp.DMGPgrid(input_dim, output_dim, design_class, kernel).to(self.device)
+        # else:
+        #     self.model = simple_dgp.DMGPadditive(input_dim, output_dim, design_class, kernel).to(self.device)
 
         self.reset_optimizer_scheduler()  # do not delete this
 
@@ -149,6 +150,7 @@ def main():
     parser.add_argument('--model',
                         type=str,
                         default='grid',
+                        choices=['additive', 'grid'],
                         help='additive | grid')
     parser.add_argument('--input-dim',
                         type=int,
@@ -205,6 +207,21 @@ def main():
                         default=5,
                         metavar='N',
                         help='number of Monte Carlo runs during training')
+    parser.add_argument('--num_layers',
+                        type=int,
+                        default=2,
+                        metavar='N',
+                        help='depth of the model')
+    parser.add_argument('--num_inducing',
+                        type=int,
+                        default=3,
+                        metavar='N',
+                        help='number of inducing levels')
+    parser.add_argument('--hidden_dim',
+                        type=int,
+                        default=8,
+                        metavar='N',
+                        help='hidden dim of the hidden layers')
     parser.add_argument(
         '--tensorboard',
         action="store_true",
@@ -234,11 +251,12 @@ def main():
         os.makedirs(args.save_dir)
 
     ############################################################################################################
-    model = DMGP(input_dim=inputs.shape[-1], output_dim=1,
-                 design_class=HyperbolicCrossDesign,
-                 kernel=LaplaceProductKernel(lengthscale=1.),
-                 batch_size=args.batch_size, lr=args.lr, gamma=args.gamma,
-                 use_cuda=True, option=args.model)
+    model = DMGPregression(input_dim=inputs.shape[-1], output_dim=1,
+                           design_class=HyperbolicCrossDesign,
+                           kernel=LaplaceProductKernel(lengthscale=1.),
+                           batch_size=args.batch_size, lr=args.lr, gamma=args.gamma,
+                           num_layers=args.num_layers, num_inducing=args.num_inducing, hidden_dim=args.hidden_dim,
+                           use_cuda=True, option=args.model)
 
     print(args.mode)
     if args.mode == 'train':
