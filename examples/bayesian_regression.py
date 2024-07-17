@@ -22,7 +22,7 @@ from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 from dataset import Dataset
 
 
-class DMGPregression:
+class Regression:
     def __init__(self, input_dim, output_dim,
                  design_class, kernel,
                  num_mc=1, num_monte_carlo=10, batch_size=128,
@@ -54,11 +54,6 @@ class DMGPregression:
 
         self.model = simple_dgp.DMGP(input_dim, output_dim, num_layers, num_inducing, hidden_dim, kernel, design_class,
                                      option=option).to(self.device)
-
-        # if option == 'grid':
-        #     self.model = simple_dgp.DMGPgrid(input_dim, output_dim, design_class, kernel).to(self.device)
-        # else:
-        #     self.model = simple_dgp.DMGPadditive(input_dim, output_dim, design_class, kernel).to(self.device)
 
         self.reset_optimizer_scheduler()  # do not delete this
 
@@ -106,7 +101,7 @@ class DMGPregression:
 
         test_loss /= len(test_loader.dataset)
 
-        print('Test set: Average loss: {:.4f}\n'.format(test_loss))
+        print('Test set: Average loss: {:.4f}'.format(test_loss))
 
     def evaluate(self, test_loader):
         test_loss = []
@@ -147,6 +142,11 @@ def main():
     dir_name = os.path.abspath(os.path.dirname(__file__))
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch simple sparse DGP regression')
+    parser.add_argument('--mode',
+                        type=str,
+                        default='test',
+                        choices=['train', 'test'],
+                        help='train | test')
     parser.add_argument('--model',
                         type=str,
                         default='grid',
@@ -157,6 +157,26 @@ def main():
                         default=7,
                         metavar='N',
                         help='input dim size for training (default: 14)')
+    parser.add_argument('--hidden_dim',
+                        type=int,
+                        default=8,
+                        metavar='N',
+                        help='hidden dim of the hidden layers')
+    parser.add_argument('--num_layers',
+                        type=int,
+                        default=2,
+                        metavar='N',
+                        help='depth of the model')
+    parser.add_argument('--num_inducing',
+                        type=int,
+                        default=3,
+                        metavar='N',
+                        help='number of inducing levels')
+    parser.add_argument('--num_mc',
+                        type=int,
+                        default=5,
+                        metavar='N',
+                        help='number of Monte Carlo runs during training')
     parser.add_argument('--batch-size',
                         type=int,
                         default=64,
@@ -182,6 +202,11 @@ def main():
                         default=0.999,
                         metavar='M',
                         help='Learning rate step gamma (default: 0.7)')
+    parser.add_argument('--num_monte_carlo',
+                        type=int,
+                        default=20,
+                        metavar='N',
+                        help='number of Monte Carlo samples to be drawn for inference')
     parser.add_argument('--no-cuda',
                         action='store_true',
                         default=False,
@@ -194,34 +219,6 @@ def main():
     parser.add_argument('--save_dir',
                         type=str,
                         default=os.path.join(dir_name, "checkpoint/bayesian"))
-    # default='./checkpoint/bayesian')
-    parser.add_argument('--mode', type=str, default='train', help='train | test')
-    parser.add_argument(
-        '--num_monte_carlo',
-        type=int,
-        default=20,
-        metavar='N',
-        help='number of Monte Carlo samples to be drawn for inference')
-    parser.add_argument('--num_mc',
-                        type=int,
-                        default=5,
-                        metavar='N',
-                        help='number of Monte Carlo runs during training')
-    parser.add_argument('--num_layers',
-                        type=int,
-                        default=2,
-                        metavar='N',
-                        help='depth of the model')
-    parser.add_argument('--num_inducing',
-                        type=int,
-                        default=3,
-                        metavar='N',
-                        help='number of inducing levels')
-    parser.add_argument('--hidden_dim',
-                        type=int,
-                        default=8,
-                        metavar='N',
-                        help='hidden dim of the hidden layers')
     parser.add_argument(
         '--tensorboard',
         action="store_true",
@@ -251,12 +248,12 @@ def main():
         os.makedirs(args.save_dir)
 
     ############################################################################################################
-    model = DMGPregression(input_dim=inputs.shape[-1], output_dim=1,
-                           design_class=HyperbolicCrossDesign,
-                           kernel=LaplaceProductKernel(lengthscale=1.),
-                           batch_size=args.batch_size, lr=args.lr, gamma=args.gamma,
-                           num_layers=args.num_layers, num_inducing=args.num_inducing, hidden_dim=args.hidden_dim,
-                           use_cuda=True, option=args.model)
+    model = Regression(input_dim=inputs.shape[-1], output_dim=1,
+                       design_class=HyperbolicCrossDesign,
+                       kernel=LaplaceProductKernel(lengthscale=1.),
+                       batch_size=args.batch_size, lr=args.lr, gamma=args.gamma,
+                       num_layers=args.num_layers, num_inducing=args.num_inducing, hidden_dim=args.hidden_dim,
+                       use_cuda=True, option=args.model)
 
     print(args.mode)
     if args.mode == 'train':
