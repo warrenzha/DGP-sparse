@@ -70,7 +70,7 @@ y = model(x)
 ## Citing Us
 If you use DGP-sparse, please cite as:
 ```bibtex
-@software{zhao2022dgpsparse,
+@software{zhao2024dgpsparse,
   author       = {Wenyuan Zhao and Haoyuan Cheng},               
   title        = {DGP-sparse: Sparse Deep Gaussian Processes in PyTorch},
   month        = jul,
