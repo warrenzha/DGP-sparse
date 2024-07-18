@@ -35,6 +35,7 @@ from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
 from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign
 
 __all__ = [
+    'GPLayer',
     'DMGP',
 ]
 
