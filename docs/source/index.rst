@@ -1,13 +1,13 @@
-:github_url: https://github.com/warrenzha/DGP-sparse
+:github_url: https://github.com/warrenzha/dmgp
 
-DGP-sparse Documentation
+DMGP Documentation
 ====================================
 
-**DGP-sparse** is a Python library for sparse deep Gaussian processes with GPU acceleration. It is built on top of
+**DMGP** is a Python library for sparse deep Gaussian processes with GPU acceleration. It is built on top of
 `PyTorch <https://pytorch.org/>`_ and provides a simple and flexible API for building complex deep GP models.
 This documentation is for the `GitHub Repo`_.
 
-.. _GitHub Repo: https://github.com/warrenzha/DGP-sparse
+.. _GitHub Repo: https://github.com/warrenzha/dmgp
 
 
 .. _installation:
@@ -17,21 +17,21 @@ Installation
 
 To use DGP-sparse, make sure you have `PyTorch installed <https://pytorch.org/get-started/locally/>`_, then install it using pip:
 
-Install from `GitHub <https://github.com/warrenzha/DGP-sparse>`_
+Install from `GitHub <https://github.com/warrenzha/dmgp>`_
 ~~~~~~~~~~~~~~~~~
 
 .. code-block:: console
 
-   $ git clone https://github.com/warrenzha/DGP_sparse.git
-   $ cd dgp_sparse
+   $ git clone https://github.com/warrenzha/dmgp.git
+   $ cd dmgp
    $ pip install .
 
-Install from `Package <https://test.pypi.org/project/sparse-dgp/>`_
+Install from `Package <https://test.pypi.org/project/dmgp/>`_
 ~~~~~~~~~~~~~~~~~
 
 .. code-block:: console
 
-   (.venv) $ pip install sparse-dgp
+   (.venv) $ pip install dmgp
 
 
 .. toctree::

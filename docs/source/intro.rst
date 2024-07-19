@@ -1,5 +1,5 @@
 ************
-Sparse Deep Gaussian Process
+Deep Gaussian Processes
 ************
 
 Deep GPs as neural networks

@@ -72,7 +72,7 @@ class TMK(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        self.norm = nn.LayerNorm(in_features)
+        self.norm = nn.LayerNorm(in_features, elementwise_affine=False)
 
         if in_features == 1:  # one-dimension TMGP
             dyadic_design = design_class(dyadic_sort=True, return_neighbors=True)(deg=n_level, input_lb=input_lb, input_ub=input_ub)
@@ -139,7 +139,7 @@ class AMK(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        self.norm = nn.LayerNorm(in_features)
+        self.norm = nn.LayerNorm(in_features, elementwise_affine=False)
 
         dyadic_design = design_class(dyadic_sort=True, return_neighbors=True)(deg=n_level, input_lb=input_lb, input_ub=input_ub)
         chol_inv = mk_chol_inv(dyadic_design=dyadic_design, markov_kernel=kernel, upper=True)  # [m, m] size tensor

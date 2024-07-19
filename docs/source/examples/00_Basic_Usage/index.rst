@@ -2,7 +2,7 @@ Basic Usage
 ==============
 
 This folder contains notebooks for basic usage of the package, e.g. things like training
-and evaluating models, and saving and loading models. Basically, there are two ways to build sparse DGPs using DGP-sparse:
+and evaluating models, and saving and loading models. Basically, there are two ways to build sparse DGPs using DMGP:
 
 Load a pre-trained model
 -----------------------
@@ -26,10 +26,10 @@ Customize your model
 
    import torch
    import torch.nn as nn
-   from dgp_sparse.models import DMGP
-   from dgp_sparse.kernels import LaplaceProductKernel
-   from dgp_sparse.utils import HyperbolicCrossDesign
-   from dgp_sparse.layers import AMGP, LinearFlipout
+   from dmgp.models import DMGP
+   from dmgp.kernels import LaplaceProductKernel
+   from dmgp.utils import HyperbolicCrossDesign
+   from dmgp.layers import AMGP, LinearFlipout
 
    # Define the model
    model = DMGP(
