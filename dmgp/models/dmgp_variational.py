@@ -29,10 +29,10 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
-from dgp_sparse.layers.linear import LinearFlipout, LinearReparameterization
-from dgp_sparse.layers.activation import TMK, AMK
-from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
-from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign
+from dmgp.layers.linear import LinearFlipout, LinearReparameterization
+from dmgp.layers.activation import TMK, AMK
+from dmgp.kernels.laplace_kernel import LaplaceProductKernel
+from dmgp.utils.sparse_design.design_class import HyperbolicCrossDesign
 
 __all__ = [
     'GPLayer',

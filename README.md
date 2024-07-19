@@ -1,10 +1,10 @@
 # DGP_sparse
-**DGP_sparse** is a Python library for sparse deep Gaussian processes (DGPs) with GPU acceleration. It is built on top of 
+**DMGP** is a Python library for sparse deep Gaussian processes (DGPs) with GPU acceleration. It is built on top of 
 PyTorch and provides a simple and flexible API for building complex deep GP models as learnable neural networks.
 
 ## Tutorials and Documentation
 See our [**documentation, examples, tutorials**](https://sparse-dgp.readthedocs.io/) on how to construct all sorts of 
-DGP models in DGP-sparse.
+DGP models in DMGP.
 
 ## Installation
 
@@ -14,18 +14,18 @@ DGP models in DGP-sparse.
 
 **To install core library using `pip`:**
 ```
-pip install dgp-sparse
+pip install dmgp
 ```
 
 **To install latest development version from source:**
 ```sh
 git clone https://github.com/warrenzha/DGP_sparse.git
-cd dgp-sparse
+cd dmgp
 pip install .
 ```
 
 ## Usage
-There are two ways to build sparse DGPs using DGP-sparse: 
+There are two ways to build sparse DGPs using DMGP: 
 1. Load a pre-trained model from the library
 2. Define your custom model with modules provided in the library
 
@@ -46,10 +46,10 @@ $ python bayesian_mnist.py --model [additive]
 ### Define your custom model
 ``` python
 import torch
-from dgp_sparse.layers import LinearFlipout
-from dgp_sparse.kernels import LaplaceProductKernel
-from dgp_sparse.utils.sparse_design import HyperbolicCrossDesign
-from dgp_sparse.models import DMGP
+from dmgp.layers import LinearFlipout
+from dmgp.kernels import LaplaceProductKernel
+from dmgp.utils.sparse_design import HyperbolicCrossDesign
+from dmgp.models import DMGP
 
 batch, dim = 1000, 7
 x = torch.randn(batch, dim).to("cuda")
@@ -72,7 +72,7 @@ If you use DGP-sparse, please cite as:
 ```bibtex
 @software{zhao2024dgpsparse,
   author       = {Wenyuan Zhao and Haoyuan Cheng},               
-  title        = {DGP-sparse: Sparse Deep Gaussian Processes in PyTorch},
+  title        = {DMGP: Sparse expansion for deep Gaussian processes in PyTorch},
   month        = jul,
   year         = 2024,
   doi          = {},

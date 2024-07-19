@@ -16,9 +16,9 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
 
-import dgp_sparse.models.dmgp_variational as simple_dgp
-from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign
-from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
+import dmgp.models.dmgp_variational as simple_dgp
+from dmgp.utils.sparse_design.design_class import HyperbolicCrossDesign
+from dmgp.kernels.laplace_kernel import LaplaceProductKernel
 from dataset import Dataset
 
 

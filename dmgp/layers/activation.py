@@ -29,9 +29,9 @@
 
 import torch
 import torch.nn as nn
-from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
-from dgp_sparse.utils.sparse_design.design_class import HyperbolicCrossDesign, SparseGridDesign
-from dgp_sparse.utils.operators.chol_inv import mk_chol_inv, tmk_chol_inv
+from dmgp.kernels.laplace_kernel import LaplaceProductKernel
+from dmgp.utils.sparse_design.design_class import HyperbolicCrossDesign, SparseGridDesign
+from dmgp.utils.operators.chol_inv import mk_chol_inv, tmk_chol_inv
 
 __all__ = [
     'TMK',

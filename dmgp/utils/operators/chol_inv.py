@@ -33,8 +33,8 @@ import scipy.sparse as sp
 import torch
 from torch import Tensor
 
-from dgp_sparse.kernels.laplace_kernel import LaplaceProductKernel
-from dgp_sparse.utils.operators.torch_scipy_sptransfer import torch_coo_to_scipy_coo
+from dmgp.kernels.laplace_kernel import LaplaceProductKernel
+from dmgp.utils.operators.torch_scipy_sptransfer import torch_coo_to_scipy_coo
 
 
 # one-dimension
