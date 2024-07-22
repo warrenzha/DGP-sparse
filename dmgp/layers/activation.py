@@ -72,7 +72,6 @@ class TMK(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        self.norm = nn.LayerNorm(in_features, elementwise_affine=False)
 
         if in_features == 1:  # one-dimension TMGP
             dyadic_design = design_class(dyadic_sort=True, return_neighbors=True)(deg=n_level, input_lb=input_lb, input_ub=input_ub)
@@ -99,8 +98,8 @@ class TMK(nn.Module):
 
         :return: [n,m] size tensor, kernel(input, sparse_grid) @ chol_inv
         """
-        out = self.norm(x)
-        out = self.kernel(out, self.design_points)  # [n, m] size tenosr
+
+        out = self.kernel(x, self.design_points)  # [n, m] size tensor
         out = out @ self.chol_inv  # [n, m] size tensor
 
         return out
@@ -139,7 +138,6 @@ class AMK(nn.Module):
         super().__init__()
 
         self.kernel = kernel
-        self.norm = nn.LayerNorm(in_features, elementwise_affine=False)
 
         dyadic_design = design_class(dyadic_sort=True, return_neighbors=True)(deg=n_level, input_lb=input_lb, input_ub=input_ub)
         chol_inv = mk_chol_inv(dyadic_design=dyadic_design, markov_kernel=kernel, upper=True)  # [m, m] size tensor
@@ -160,8 +158,7 @@ class AMK(nn.Module):
         :return: [n,m*d] size tensor, kernel(input, sparse_grid) @ chol_inv
         """
 
-        out = self.norm(x)
-        out = torch.flatten(out, start_dim=1)  # flatten x of size [...,n,d] --> size [...,n*d]
+        out = torch.flatten(x, start_dim=1)  # flatten x of size [...,n,d] --> size [...,n*d]
         out = out.unsqueeze(dim=-1)  # add new dimension, x of size [...,n*d] --> size [...,n*d, 1]
         out = self.kernel(out, self.design_points)  # [...,n*d, m] size tenosr
         out = torch.matmul(out, self.chol_inv)  # [..., n*d, m] size tensor

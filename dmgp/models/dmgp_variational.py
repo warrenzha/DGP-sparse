@@ -39,24 +39,33 @@ __all__ = [
     'DMGP',
 ]
 
+
 class GPLayer(nn.Module):
     def __init__(self,
                  in_dim,
                  out_dim,
                  num_inducing=4,
+                 input_lb=-2,
+                 input_ub=2,
                  dense=LinearFlipout,
                  gp_activation=AMK,
                  kernel=LaplaceProductKernel(lengthscale=1.),
                  design_class=HyperbolicCrossDesign):
         super(GPLayer, self).__init__()
 
-        # self.norm = nn.LayerNorm(in_dim, elementwise_affine=False)
-        self.gp = gp_activation(in_features=in_dim, n_level=num_inducing, design_class=design_class, kernel=kernel)
+        self.norm = nn.LayerNorm(in_dim, elementwise_affine=False)
+        self.gp = gp_activation(in_features=in_dim,
+                                n_level=num_inducing,
+                                input_lb=input_lb,
+                                input_ub=input_ub,
+                                design_class=design_class,
+                                kernel=kernel)
         self.dense = dense(in_features=self.gp.out_features, out_features=out_dim)
 
-    def forward(self, x, return_kl=True):
+    def forward(self, x, normalize=True, return_kl=True):
         kl_sum = 0
-        # x = self.norm(x)
+        if normalize:
+            x = self.norm(x)
         out = self.gp(x)
         out, kl = self.dense(out)
         kl_sum += kl
@@ -72,8 +81,10 @@ class DMGP(nn.Module):
                  input_dim,
                  output_dim,
                  num_layers=2,
-                 num_inducing=4,
                  hidden_dim=64,
+                 num_inducing=4,
+                 input_lb=-2,
+                 input_ub=2,
                  kernel=LaplaceProductKernel(lengthscale=1.),
                  design_class=HyperbolicCrossDesign,
                  layer_type=LinearFlipout,
@@ -86,23 +97,25 @@ class DMGP(nn.Module):
             [GPLayer(hidden_dim,
                      hidden_dim,
                      num_inducing,
-                     layer_type,
-                     activation,
-                     kernel,
-                     design_class,
+                     input_lb,
+                     input_ub,
+                     dense=layer_type,
+                     gp_activation=activation,
+                     kernel=kernel,
+                     design_class=design_class,
                      ) for _ in range(num_layers)
              ]
         )
         self.classifier = LinearFlipout(hidden_dim, output_dim)
         self.output_dim = output_dim
 
-    def forward(self, x, return_kl=True):
+    def forward(self, x, normalize=True, return_kl=True):
         kl_sum = 0
         out = torch.flatten(x, 1)
         out, kl = self.embedding(out)
         kl_sum += kl
         for gp_layer in self.gp_layers:
-            out, kl = gp_layer(out)
+            out, kl = gp_layer(out, normalize)
             kl_sum += kl
         out, kl = self.classifier(out)
         kl_sum += kl
