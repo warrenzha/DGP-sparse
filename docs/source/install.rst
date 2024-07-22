@@ -27,7 +27,7 @@ Install from `Package <https://test.pypi.org/project/dmgp/>`_
 
 .. code-block:: console
 
-   (.venv) $ pip install dmgp
+   (.venv) $ pip install -i https://test.pypi.org/simple/ dmgp
 
 .. note::
 

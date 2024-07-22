@@ -2,10 +2,9 @@ Basic Usage
 ==============
 
 This folder contains notebooks for basic usage of the package, e.g. things like training
-and evaluating models, and saving and loading models. Basically, there are two ways to build sparse DGPs using DMGP:
+and evaluating models, and saving and loading models. Basically, there are two ways to DMGP:
 
-Load a pre-trained model
------------------------
+1. Load a pre-trained model
 
 .. code-block:: console
 
@@ -19,8 +18,7 @@ Load a pre-trained model
                                        --num_mc [num_monte_carlo_training]
                                        --log_dir [logs_directory]
 
-Customize your model
------------------------
+2. Define your customized model
 
 .. code-block:: python
 
@@ -70,3 +68,6 @@ Customize your model
    :hidden:
 
    Defining_an_Example_Model.ipynb
+   0_laplace_kernel.ipynb
+   1_sgdesign.ipynb
+   2_chol_inv.ipynb

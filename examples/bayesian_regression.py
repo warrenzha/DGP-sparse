@@ -177,6 +177,11 @@ def main():
                         default=5,
                         metavar='N',
                         help='number of Monte Carlo runs during training')
+    parser.add_argument('--num_monte_carlo',
+                        type=int,
+                        default=20,
+                        metavar='N',
+                        help='number of Monte Carlo samples to be drawn for inference')
     parser.add_argument('--batch-size',
                         type=int,
                         default=64,
@@ -202,11 +207,6 @@ def main():
                         default=0.999,
                         metavar='M',
                         help='Learning rate step gamma (default: 0.7)')
-    parser.add_argument('--num_monte_carlo',
-                        type=int,
-                        default=20,
-                        metavar='N',
-                        help='number of Monte Carlo samples to be drawn for inference')
     parser.add_argument('--no-cuda',
                         action='store_true',
                         default=False,

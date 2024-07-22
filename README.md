@@ -1,17 +1,16 @@
 # Deep Markov Gaussian Processes (DMGP)
 
-[//]: # ([![Documentation Status]&#40;https://readthedocs.org/projects/sparse-dgp/badge/?version=latest&#41;]&#40;https://sparse-dgp.readthedocs.io/en/latest/?badge=latest&#41;)
-
-[//]: # ([![PyPI version]&#40;https://badge.fury.io/py/dmgp.svg&#41;]&#40;https://badge.fury.io/py/dmgp&#41;)
-
-[//]: # ([![License: MIT]&#40;https://img.shields.io/badge/License-MIT-yellow.svg&#41;]&#40;https://opensource.org/licenses/MIT&#41;)
+[![python](https://img.shields.io/badge/python-3.8%2B-blue)](https://github.com/IntelLabs/bayesian-torch)
+[![version](https://img.shields.io/badge/release-0.1.0-green)](https://test.pypi.org/project/dmgp/)
+[![Documentation Status](https://readthedocs.org/projects/sparse-dgp/badge/?version=latest)](https://dmgp.readthedocs.io/en/latest/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **DMGP** is a Python library for sparse deep Gaussian processes (DGPs) and uncertainty estimation with GPU acceleration. 
 It is built on top of PyTorch and provides a simple and flexible API for building complex deep GP models as trainable 
 neural networks.
 
 ## Tutorials and Documentation
-See our [**documentation, examples, tutorials**](https://sparse-dgp.readthedocs.io/) on how to construct all sorts of 
+See our [**documentation, examples, tutorials**](https://dmgp.readthedocs.io/en/latest/) on how to construct all sorts of 
 DGP models in DMGP.
 
 ## Installation
@@ -23,7 +22,7 @@ DGP models in DMGP.
 
 **To install core library using `pip`:**
 ```
-pip install dmgp
+pip install -i https://test.pypi.org/simple/ dmgp
 ```
 
 **To install latest development version from source:**
