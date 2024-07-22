@@ -6,7 +6,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         # List your dependencies here
-        # 'some_package>=1.0.0',
+        'torch>=1.9.0',
+        'scipy>=1.12.0',
     ],
     entry_points={
         'console_scripts': [
