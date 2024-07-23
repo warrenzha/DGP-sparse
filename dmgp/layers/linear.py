@@ -49,7 +49,7 @@ from torch.quantization.qconfig import QConfig
 
 
 class LinearReparameterization(_BaseVariationalLayer):
-    """
+    r"""
     Implements Linear layer with reparameterization trick. Inherits from bayesian_torch.layers.BaseVariationalLayer_
 
     :param in_features: Size of each input sample.
@@ -213,20 +213,23 @@ class LinearFlipout(_BaseVariationalLayer):
                  posterior_mu_init=0,
                  posterior_rho_init=-3.0,
                  bias=True):
-        """
-        Implements Linear layer with Flipout reparameterization trick.
-        Ref: https://arxiv.org/abs/1803.04386
+        r"""
+        Implements Linear layer with Flipout reparameterization trick. Ref: https://arxiv.org/abs/1803.04386. Inherits from bayesian_torch.layers._BaseVariationalLayer.
 
-        Inherits from bayesian_torch.layers.BaseVariationalLayer_
-
-        Parameters:
-            in_features: int -> size of each input sample,
-            out_features: int -> size of each output sample,
-            prior_mean: float -> mean of the prior arbitrary distribution to be used on the complexity cost,
-            prior_variance: float -> variance of the prior arbitrary distribution to be used on the complexity cost,
-            posterior_mu_init: float -> init trainable mu parameter representing mean of the approximate posterior,
-            posterior_rho_init: float -> init trainable rho parameter representing the sigma of the approximate posterior through softplus function,
-            bias: bool -> if set to False, the layer will not learn an additive bias. Default: True,
+        :param in_features: Size of each input sample.
+        :type in_features: int
+        :param out_features: Size of each output sample.
+        :type out_features: int
+        :param prior_mean: Mean of the prior arbitrary distribution to be used on the complexity cost. (Default: `0`.)
+        :type prior_mean: float, optional
+        :param prior_variance: Variance of the prior arbitrary distribution to be used on the complexity cost. (Default: `1.0`.)
+        :type prior_variance: float, optional
+        :param posterior_mu_init: Initialized trainable mu parameter representing mean of the approximate posterior. (Default: `0`.)
+        :type posterior_mu_init: float, optional
+        :param posterior_rho_init: Initialized trainable rho parameter representing the sigma of the approximate posterior through softplus function. (Default: `-3.0`.)
+        :type posterior_rho_init: float, optional
+        :param bias: If set to False, the layer will not learn an additive bias. (Default: `True`.)
+        :type bias: bool, optional
         """
         super().__init__()
 

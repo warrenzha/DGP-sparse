@@ -48,7 +48,8 @@ class LaplaceProductKernel(nn.Module):
     where :math:`\theta` is the lengthscale parameter.
 
     
-    :param lengthscale: Set this if you want a customized lengthscale. It should be a [d] size tensor. Default: `None` = d.
+    :param lengthscale: Set this if you want a customized lengthscale. It should be a tensor of size (d,). (Default: 1.0.)
+    :type lengthscale: float, optional
     """
 
     def __init__(self, lengthscale=None):
@@ -60,16 +61,15 @@ class LaplaceProductKernel(nn.Module):
         r"""
         Computes the covariance between :math:`\mathbf x_1` and :math:`\mathbf x_2`.
         
-        :param x1: First set of data.
-        :type x1: n x d torch.Tensor.float
-        :param x2: Second set of data.
-        :type x2: m x d torch.Tensor.float
-        :param diag: Should the kernel compute the whole kernel, or just the diag? If `True`, it must be the case that `x1 == x2`. (Default: `False`.)
-        :type x1: bool, optional
+        :param x1: First set of data of shape :math:`(n,d)`.
+        :type x1: torch.Tensor.float
+        :param x2: Second set of data of shape :math:`(m,d)`.
+        :type x2: torch.Tensor.float
+        :param diag: Compute diagonal covariance matrix if `True`. It must be the case that `x1 == x2`. Default: `False`.
+        :type diag: bool, optional
         
-        :return: the kernel matrix or vector. The shape depends on the kernel's evaluation mode:
-
-            * 'full_covar`: `n x m`
+        :return: The kernel matrix or vector. The shape depends on the kernel's mode:
+            * 'full_cov`: `n x m`
             * `diag`: `n`
         """
         # Size checking
@@ -129,13 +129,14 @@ class LaplaceAdditiveKernel(nn.Module):
     .. math::
 
         \begin{equation*}
-            k\left( \mathbf{x_1}, \mathbf{x_2} \right) = \sum_{j=1}^{d}k_j\left( x_{1,j}, x_{2,j} \right)
+            k\left( \mathbf{x_1}, \mathbf{x_2} \right) = \sum_{j=1}^{d}\exp\left\{ -\frac{\left(
+            x_{1,j}- x_{2,j} \right)}{\theta} \right\}
         \end{equation*}
     
     where :math:`\theta` is the lengthscale parameter.
 
-    :param lengthscale: Set this if you want a customized lengthscale. It should be a [d] size tensor. (Default: `None` = d.)
-    :type lengthscale: float or torch.Tensor.float, optional
+    :param lengthscale: Set this if you want a customized lengthscale. It should be a tensor of size (d,). (Default: 1.0.)
+    :type lengthscale: float, optional
     """
     def __init__(self, lengthscale=None):
         super().__init__()
@@ -143,19 +144,18 @@ class LaplaceAdditiveKernel(nn.Module):
 
     def forward(self, x1: Tensor, x2: Optional[Tensor] = None, 
                 diag: bool = False, **params) -> Tensor:
-        """
+        r"""
         Computes the covariance between :math:`\mathbf x_1` and :math:`\mathbf x_2`.
         
-        :param x1: First set of data.
-        :type x1: n x d torch.Tensor.float
-        :param x2: Second set of data.
-        :type x2: m x d torch.Tensor.float
-        :param diag: Should the kernel compute the whole kernel, or just the diag? If `True`, it must be the case that `x1 == x2`. (Default: `False`.)
-        :type x1: bool, optional
+        :param x1: First set of data of shape :math:`(n,d)`.
+        :type x1: torch.Tensor.float
+        :param x2: Second set of data of shape :math:`(m,d)`.
+        :type x2: torch.Tensor.float
+        :param diag: Compute diagonal covariance matrix if `True`. It must be the case that `x1 == x2`. Default: `False`.
+        :type diag: bool, optional
 
-        :return: the kernel matrix or vector. The shape depends on the kernel's evaluation mode:
-
-            * 'full_covar`: `n x m`
+        :return: The kernel matrix or vector. The shape depends on the kernel's mode:
+            * 'full_cov`: `n x m`
             * `diag`: `n`
         """        
         # Size checking

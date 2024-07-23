@@ -11,14 +11,14 @@ dmgp.models
 Models for Fully-connected DMGP
 -----------------------------
 
-:hidden:`dmgp_variational.GPLayer`
+:hidden:`GPLayer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: dmgp.models.dmgp_variational.GPLayer
+.. autoclass:: GPLayer
    :members:
 
-:hidden:`dmgp_variational.DMGP`
+:hidden:`DMGP`
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: dmgp.models.dmgp_variational.DMGP
+.. autoclass:: DMGP
    :members:

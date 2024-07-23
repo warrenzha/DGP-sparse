@@ -53,12 +53,14 @@ class TMK(nn.Module):
     :type in_features: int
     :param n_level: Level of sparse grid design. (Default: `2`.)
     :type n_level: int, optional
-    :param input_bd: Input boundary. (Default: `None`=[0,1].)
-    :type input_bd: 2-size list
+    :param input_lb: Input lower boundary. (Default: `-2`.)
+    :type input_lb: float, optional
+    :param input_ub: Input upper boundary. (Default: `2`.)
+    :type input_ub: float, optional
     :param design_class: Base design class of sparse grid. (Default: `HyperbolicCrossDesign`.)
-    :type design_class: class, optional
+    :type design_class: class, dmgp.utils.sparse_design.design_class, optional
     :param kernel: Kernel function of deep GP. (Default: `LaplaceProductKernel(lengthscale=1.)`.)
-    :type kernel: class, optional
+    :type kernel: class, dmgp.kernels, optional
     """
 
     def __init__(self,
@@ -91,12 +93,13 @@ class TMK(nn.Module):
         self.out_features = design_points.shape[0]
 
     def forward(self, x):
-        """
-        Computes the tensor markov kernel of :math:`\mathbf x`.
+        r"""
+        Computes the tensor markov kernel activation of :math:`\mathbf x`.
 
-        :param x: [n,d] size tensor, n is the number of the input, d is the dimension of the input
+        :param x: (n,d) size tensor, n is the number of the input, d is the dimension of the input
+        :type x: torch.Tensor.float
 
-        :return: [n,m] size tensor, kernel(input, sparse_grid) @ chol_inv
+        :return: (n,m) size tensor, kernel(input, sparse_grid) @ chol_inv
         """
 
         out = self.kernel(x, self.design_points)  # [n, m] size tensor
@@ -107,7 +110,7 @@ class TMK(nn.Module):
 
 class AMK(nn.Module):
     r"""
-    Implements tensor markov GP as an activation layer using additive structure.
+    Implements additive markov GP as an activation layer using additive structure.
 
     .. math::
 
@@ -117,19 +120,21 @@ class AMK(nn.Module):
 
     :param in_features: Size of each input sample.
     :type in_features: int
-    :param n_level: Level of sparse grid design. (Default: `2`.)
+    :param n_level: Level of induced points for approximating GP. (Default: `3`.)
     :type n_level: int, optional
-    :param input_bd: Input boundary. (Default: `None`=[0,1].)
-    :type input_bd: 2-size list
+    :param input_lb: Input lower boundary. (Default: `-2`.)
+    :type input_lb: float, optional
+    :param input_ub: Input upper boundary. (Default: `2`.)
+    :type input_ub: float, optional
     :param design_class: Base design class of sparse grid. (Default: `HyperbolicCrossDesign`.)
-    :type design_class: class, optional
+    :type design_class: class, dmgp.utils.sparse_design.design_class, optional
     :param kernel: Kernel function of deep GP. (Default: `LaplaceProductKernel(lengthscale=1.)`.)
-    :type kernel: class, optional
+    :type kernel: class, dmgp.kernels, optional
     """
 
     def __init__(self,
                  in_features,
-                 n_level,
+                 n_level=3,
                  input_lb=-2,
                  input_ub=2,
                  design_class=HyperbolicCrossDesign,
@@ -150,12 +155,13 @@ class AMK(nn.Module):
         self.out_features = design_points.shape[0] * in_features  # m*d
 
     def forward(self, x):
-        """
-        Computes the element-wise tensor markov kernel of :math:`\mathbf x`.
+        r"""
+        Computes the element-wise markov kernel activation of :math:`\mathbf x`.
 
-        :param x: [n,d] size tensor, n is the number of the input, d is the dimension of the input
+        :param x: (n,d) size tensor, n is the number of the input, d is the dimension of the input
+        :type x: torch.Tensor.float
 
-        :return: [n,m*d] size tensor, kernel(input, sparse_grid) @ chol_inv
+        :return: (n,m*d) size tensor, kernel(input, sparse_grid) @ chol_inv
         """
 
         out = torch.flatten(x, start_dim=1)  # flatten x of size [...,n,d] --> size [...,n*d]

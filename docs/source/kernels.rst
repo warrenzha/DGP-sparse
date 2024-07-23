@@ -1,7 +1,7 @@
 .. role:: hidden
     :class: hidden-section
 
-gpytorch.kernels
+dmgp.kernels
 ===================================
 
 .. automodule:: dmgp.kernels
@@ -15,13 +15,13 @@ If you don't know what kernel to use, we recommend that you start out with a
 Laplace Kernels
 -----------------------------
 
-:hidden:`laplace_kernel.LaplaceProductKernel`
+:hidden:`LaplaceProductKernel`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: LaplaceProductKernel
    :members:
 
-:hidden:`laplace_kernel.LaplaceAdditiveKernel`
+:hidden:`LaplaceAdditiveKernel`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: LaplaceAdditiveKernel
