@@ -1,6 +1,6 @@
 # Deep Markov Gaussian Processes (DMGP)
 
-[![python](https://img.shields.io/badge/python-3.8%2B-blue)](https://github.com/IntelLabs/bayesian-torch)
+[![python](https://img.shields.io/badge/python-3.8%2B-blue)](https://github.com/warrenzha/dmgp)
 [![version](https://img.shields.io/badge/release-0.1.0-green)](https://test.pypi.org/project/dmgp/)
 [![Documentation Status](https://readthedocs.org/projects/sparse-dgp/badge/?version=latest)](https://dmgp.readthedocs.io/en/latest/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

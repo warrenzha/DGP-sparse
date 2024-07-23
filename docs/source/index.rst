@@ -15,7 +15,7 @@ This documentation is for the `GitHub Repo`_.
 Installation
 ------------
 
-To use DGP-sparse, make sure you have `PyTorch installed <https://pytorch.org/get-started/locally/>`_, then install it using pip:
+To use DMGP, make sure you have `PyTorch installed <https://pytorch.org/get-started/locally/>`_, then install it using pip:
 
 Install from `GitHub <https://github.com/warrenzha/dmgp>`_
 ~~~~~~~~~~~~~~~~~
@@ -31,7 +31,7 @@ Install from `Package <https://test.pypi.org/project/dmgp/>`_
 
 .. code-block:: console
 
-   (.venv) $ pip install dmgp
+   (.venv) $ pip install -i https://test.pypi.org/simple/ dmgp
 
 
 .. toctree::
@@ -50,11 +50,13 @@ Install from `Package <https://test.pypi.org/project/dmgp/>`_
    examples/**/index
 
 .. toctree::
-   :glob:
    :maxdepth: 1
-   :caption: API
+   :caption: Package Reference
 
-   api.rst
+   models
+   kernels
+   layers
+
 
 References
 ======================
