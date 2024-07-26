@@ -47,12 +47,12 @@ class GPLayer(nn.Module):
 
     .. math::
 
-        \begin{equation*}
+        \begin{align*}
             \hat{\mathcal{G}}^{(i)}(\cdot) := & \mu + k(\cdot, \mathbf{U})
             [ k(\mathbf{U}, \mathbf{U})]^{-1} \mathcal{G}^{(i)}(\mathbf{U}), \\
             = & \mu + k(\cdot, \mathbf{U}) R^{-1}_{\mathbf{U}} \mathbf{Z} \\
             = & \mu + \phi^{T}(\cdot) \mathbf{Z}
-        \end{equation*}
+        \end{align*}
 
     A GP Layer consists of a GP activation :math:`\phi(\cdot) = k(\cdot, \mathbf{U}) R^{-1}_{\mathbf{U}}`
     and a linear layer with Gaussian weights :math:`\mathbf{Z} = [R^{T}_{\mathbf{U}}]^-1 \mathcal{G}(\mathbf{U})`.
