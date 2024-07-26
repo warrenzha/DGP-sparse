@@ -1,3 +1,18 @@
-torch>=1.7.0
-torchvision>=0.8.1
-scipy>=1.10.1
+numpy>=1.20.0
+matplotlib>=3.8
+scipy>=1.12.0
+
+# for CUDA 11.8 torch on Linux
+torch>=1.9.0; sys_platform == "linux"
+torchvision>=0.10.0; sys_platform == "linux"
+-f https://download.pytorch.org/whl/cu118 ; sys_platform == "linux"
+
+# for MPS accelerated torch on Mac
+torch>=1.9.0; sys_platform == "darwin"
+torchvision>=0.10.0; sys_platform == "darwin"
+tensorboard; sys_platform == "darwin"
+--pre --extra-index-url https://download.pytorch.org/whl/nightly/cpu ; sys_platform == "darwin"
+
+# for Windows
+torch>=1.9.0; sys_platform == "windows"
+torchvision>=0.10.0; sys_platform == "windows"

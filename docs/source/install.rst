@@ -20,7 +20,7 @@ Install from `GitHub <https://github.com/warrenzha/dmgp>`_
 
    $ git clone https://github.com/warrenzha/dmgp.git
    $ cd dmgp
-   $ pip install .
+   $ pip install -r requirements.txt
 
 Install from `Package <https://test.pypi.org/project/dmgp/>`_
 ===================
