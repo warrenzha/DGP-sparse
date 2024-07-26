@@ -1,6 +1,7 @@
 # Deep Markov Gaussian Processes (DMGP)
 
 [![python](https://img.shields.io/badge/python-3.8%2B-blue)](https://github.com/warrenzha/dmgp)
+[![pytorch](https://img.shields.io/badge/pytorch-1.7.0%2B-orange)](https://github.com/warrenzha/dmgp)
 [![version](https://img.shields.io/badge/release-0.1.0-green)](https://test.pypi.org/project/dmgp/)
 [![Documentation Status](https://readthedocs.org/projects/sparse-dgp/badge/?version=latest)](https://dmgp.readthedocs.io/en/latest/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -66,7 +67,7 @@ model = DMGP(
     output_dim = 1,
     num_layers = 2,
     num_inducing = 3,
-    hidden_dim = 64,
+    hidden_dim = 8,
     kernel = LaplaceProductKernel(lengthscale=1.),
     design_class = HyperbolicCrossDesign,
     layer_type = LinearFlipout,
