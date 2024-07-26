@@ -29,7 +29,7 @@ pip install -i https://test.pypi.org/simple/ dmgp
 ```sh
 git clone https://github.com/warrenzha/dmgp.git
 cd dmgp
-pip install .
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -76,16 +76,16 @@ y = model(x)
 ```
 
 ## Citing Us
-If you use DGP-sparse, please cite as:
+If you use DMGP, please cite as:
 ```bibtex
 @software{zhao2024dgpsparse,
-  author       = {Wenyuan Zhao and Haoyuan Cheng},               
+  author       = {Wenyuan Zhao and Haoyuan Chen},               
   title        = {DMGP: Sparse expansion for deep Gaussian processes in PyTorch},
   month        = jul,
   year         = 2024,
   doi          = {},
-  url          = {https://sparse-dgp.readthedocs.io/},
-  howpublished = {\url{https://https://github.com/warrenzha/DGP_sparse.git}}
+  url          = {https://dmgp.readthedocs.io/},
+  howpublished = {\url{https://github.com/warrenzha/dmgp.git}}
 }
 ```
 A Sparse Expansion for Deep Gaussian Processes
