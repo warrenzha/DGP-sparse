@@ -50,7 +50,7 @@ from torch.quantization.qconfig import QConfig
 
 class LinearReparameterization(_BaseVariationalLayer):
     r"""
-    Implements Linear layer with reparameterization trick. Inherits from bayesian_torch.layers.BaseVariationalLayer_
+    Implements Linear layer with reparameterization trick. Inherits from dmgp.layers._BaseVariationalLayer
 
     :param in_features: Size of each input sample.
     :type in_features: int
@@ -159,7 +159,18 @@ class LinearReparameterization(_BaseVariationalLayer):
                               self.prior_bias_mu, self.prior_bias_sigma)
         return kl
 
-    def forward(self, input, return_kl=True):
+    def forward(self, x, return_kl=True):
+        r"""
+        Forward the bayesian Linear layer.
+
+        :param x: Training data of shape :math:`(n,d)`.
+        :type x: torch.Tensor.float
+        :param return_kl: Return KL-divergence. Default: `True`.
+        :type return_kl: bool, optional
+
+        :return: The output and KL-divergence.
+        """
+
         if self.dnn_to_bnn_flag:
             return_kl = False
         sigma_weight = torch.log1p(torch.exp(self.rho_weight))
@@ -179,11 +190,11 @@ class LinearReparameterization(_BaseVariationalLayer):
                 kl_bias = self.kl_div(self.mu_bias, sigma_bias, self.prior_bias_mu,
                                       self.prior_bias_sigma)
 
-        out = F.linear(input, weight, bias)
+        out = F.linear(x, weight, bias)
 
         if self.quant_prepare:
             # quint8 quantstrat
-            input = self.quint_quant[0](input)  # input
+            x = self.quint_quant[0](x)  # input
             out = self.quint_quant[1](out)  # output
 
             # qint8 quantstrat
@@ -205,6 +216,25 @@ class LinearReparameterization(_BaseVariationalLayer):
 
 
 class LinearFlipout(_BaseVariationalLayer):
+    r"""
+    Implements Linear layer with Flipout reparameterization trick. Ref: https://arxiv.org/abs/1803.04386. Inherits from dmgp.layers._BaseVariationalLayer.
+
+    :param in_features: Size of each input sample.
+    :type in_features: int
+    :param out_features: Size of each output sample.
+    :type out_features: int
+    :param prior_mean: Mean of the prior arbitrary distribution to be used on the complexity cost. (Default: `0`.)
+    :type prior_mean: float, optional
+    :param prior_variance: Variance of the prior arbitrary distribution to be used on the complexity cost. (Default: `1.0`.)
+    :type prior_variance: float, optional
+    :param posterior_mu_init: Initialized trainable mu parameter representing mean of the approximate posterior. (Default: `0`.)
+    :type posterior_mu_init: float, optional
+    :param posterior_rho_init: Initialized trainable rho parameter representing the sigma of the approximate posterior through softplus function. (Default: `-3.0`.)
+    :type posterior_rho_init: float, optional
+    :param bias: If set to False, the layer will not learn an additive bias. (Default: `True`.)
+    :type bias: bool, optional
+    """
+
     def __init__(self,
                  in_features,
                  out_features,
@@ -213,25 +243,7 @@ class LinearFlipout(_BaseVariationalLayer):
                  posterior_mu_init=0,
                  posterior_rho_init=-3.0,
                  bias=True):
-        r"""
-        Implements Linear layer with Flipout reparameterization trick. Ref: https://arxiv.org/abs/1803.04386. Inherits from bayesian_torch.layers._BaseVariationalLayer.
-
-        :param in_features: Size of each input sample.
-        :type in_features: int
-        :param out_features: Size of each output sample.
-        :type out_features: int
-        :param prior_mean: Mean of the prior arbitrary distribution to be used on the complexity cost. (Default: `0`.)
-        :type prior_mean: float, optional
-        :param prior_variance: Variance of the prior arbitrary distribution to be used on the complexity cost. (Default: `1.0`.)
-        :type prior_variance: float, optional
-        :param posterior_mu_init: Initialized trainable mu parameter representing mean of the approximate posterior. (Default: `0`.)
-        :type posterior_mu_init: float, optional
-        :param posterior_rho_init: Initialized trainable rho parameter representing the sigma of the approximate posterior through softplus function. (Default: `-3.0`.)
-        :type posterior_rho_init: float, optional
-        :param bias: If set to False, the layer will not learn an additive bias. (Default: `True`.)
-        :type bias: bool, optional
-        """
-        super().__init__()
+        super(LinearFlipout, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
@@ -307,6 +319,17 @@ class LinearFlipout(_BaseVariationalLayer):
         return kl
 
     def forward(self, x, return_kl=True):
+        r"""
+        Forward the bayesian Linear layer.
+
+        :param x: Training data of shape :math:`(n,d)`.
+        :type x: torch.Tensor.float
+        :param return_kl: Return KL-divergence. Default: `True`.
+        :type return_kl: bool, optional
+
+        :return: The output and KL-divergence.
+        """
+
         if self.dnn_to_bnn_flag:
             return_kl = False
         # sampling delta_W

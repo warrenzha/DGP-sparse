@@ -14,7 +14,7 @@ Base Variational Layer
 :hidden:`_BaseVariationalLayer`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: _BaseVariationalLayer
+.. autoclass:: dmgp.layers.base_variational_layer._BaseVariationalLayer
    :members:
 
 GP Activation Layers

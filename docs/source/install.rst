@@ -11,7 +11,7 @@ Requirements
 ===================
 - Python >= 3.8
 - PyTorch >= 1.9.0
-- SciPy >= 1.12.0
+- SciPy >= 1.7.0
 
 Install from `GitHub <https://github.com/warrenzha/dmgp>`_
 ===================

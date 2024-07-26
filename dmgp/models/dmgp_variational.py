@@ -64,7 +64,7 @@ class GPLayer(nn.Module):
     :type in_dim: int
     :param out_dim: Output dimensionality of GP layer.
     :type out_dim: int
-    :param num_inducing: Level of inducing points for approximating GP. Default: `4`.
+    :param num_inducing: Level of inducing points for approximating GP. Default: `3`.
     :type num_inducing: int, optional
     :param input_lb: Lower bound of the input space. You can choose any bound you want and apply normalization in the front. Default: `-2.`.
     :type input_lb: float, optional
@@ -127,7 +127,7 @@ class GPLayer(nn.Module):
 
 
 class DMGP(nn.Module):
-    """
+    r"""
     A container module to build a Deep GP. This module should contain GPLayer modules, and can also contain other modules as well.
 
     :param in_dim: Input dimensionality of :math:`\mathbf x_1`.
@@ -136,9 +136,9 @@ class DMGP(nn.Module):
     :type out_dim: int
     :param num_layers: Number of hidden layers in DMGP model. Default: `2`.
     :type num_layers: int
-    :param hidden_dim: Dimension of hidden layers in DMGP model. Default: `64`.
+    :param hidden_dim: Dimension of hidden layers in DMGP model. Default: `8`.
     :type hidden_dim: int
-    :param num_inducing: Level of inducing points for approximating GP. Default: `4`.
+    :param num_inducing: Level of inducing points for approximating GP. Default: `3`.
     :type num_inducing: int, optional
     :param input_lb: Lower bound of the input space. You can choose any bound you want and apply normalization in the front. Default: `-2.`.
     :type input_lb: float, optional
@@ -157,8 +157,8 @@ class DMGP(nn.Module):
                  input_dim,
                  output_dim,
                  num_layers=2,
-                 hidden_dim=64,
-                 num_inducing=4,
+                 hidden_dim=8,
+                 num_inducing=3,
                  input_lb=-2,
                  input_ub=2,
                  kernel=LaplaceProductKernel(lengthscale=1.),
