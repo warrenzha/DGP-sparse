@@ -183,7 +183,6 @@ class DMGP(nn.Module):
              ]
         )
         self.classifier = LinearFlipout(hidden_dim, output_dim)
-        self.output_dim = output_dim
 
     def forward(self, x, normalize=True, return_kl=True):
         r"""
@@ -207,8 +206,6 @@ class DMGP(nn.Module):
             kl_sum += kl
         out, kl = self.classifier(out)
         kl_sum += kl
-        if self.output_dim == 1:
-            out = out.squeeze(-1)
 
         if return_kl:
             return out, kl_sum
