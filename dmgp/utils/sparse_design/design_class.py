@@ -74,7 +74,7 @@ class HyperbolicCrossDesign:
                 for i in range(1, deg+1):
                     increment_set = torch.arange(start=1, end=2**i, step=2) * (0.5**i)
                     res_basis = torch.cat((res_basis,increment_set),dim=0)
-                    res = res_basis*(x_n-x_1) + x_1
+                    res = res_basis * (x_n - x_1) + x_1
                     len_increment = len(increment_set)
                     if self.return_neighbors is True:
                         

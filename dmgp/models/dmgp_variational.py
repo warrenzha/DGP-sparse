@@ -82,7 +82,7 @@ class GPLayer(nn.Module):
     def __init__(self,
                  in_dim,
                  out_dim,
-                 num_inducing=4,
+                 num_inducing=5,
                  input_lb=-2,
                  input_ub=2,
                  dense=LinearFlipout,
@@ -91,7 +91,7 @@ class GPLayer(nn.Module):
                  design_class=HyperbolicCrossDesign):
         super(GPLayer, self).__init__()
 
-        self.norm = nn.LayerNorm(in_dim, elementwise_affine=False)
+        self.norm = nn.BatchNorm1d(in_dim, affine=False)
         self.gp = gp_activation(in_features=in_dim,
                                 n_level=num_inducing,
                                 input_lb=input_lb,
@@ -138,7 +138,7 @@ class DMGP(nn.Module):
     :type num_layers: int
     :param hidden_dim: Dimension of hidden layers in DMGP model. Default: `8`.
     :type hidden_dim: int
-    :param num_inducing: Level of inducing points for approximating GP. Default: `3`.
+    :param num_inducing: Level of inducing points for approximating GP. For "sparse grid" design, we recommend low level of inducing. Default: `3`.
     :type num_inducing: int, optional
     :param input_lb: Lower bound of the input space. You can choose any bound you want and apply normalization in the front. Default: `-2.`.
     :type input_lb: float, optional

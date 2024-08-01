@@ -16,7 +16,7 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
 
-import dmgp.models.dmgp_variational as simple_dgp
+from dmgp.models.dmgp_variational import DMGP
 from dmgp.utils.sparse_design.design_class import HyperbolicCrossDesign
 from dmgp.kernels.laplace_kernel import LaplaceProductKernel
 from dataset import Dataset
@@ -24,7 +24,7 @@ from dataset import Dataset
 
 class Regression:
     def __init__(self, input_dim, output_dim,
-                 design_class, kernel,
+                 kernel, design_class,
                  num_mc=1, num_monte_carlo=10, batch_size=128,
                  lr=1.0,
                  gamma=0.999,
@@ -52,8 +52,14 @@ class Regression:
         self.num_mc = num_mc
         self.num_monte_carlo = num_monte_carlo
 
-        self.model = simple_dgp.DMGP(input_dim, output_dim, num_layers, num_inducing, hidden_dim, kernel, design_class,
-                                     option=option).to(self.device)
+        self.model = DMGP(input_dim=input_dim,
+                          output_dim=output_dim,
+                          num_layers=num_layers,
+                          num_inducing=num_inducing,
+                          hidden_dim=hidden_dim,
+                          kernel=kernel,
+                          design_class=design_class,
+                          option=option).to(self.device)
 
         self.reset_optimizer_scheduler()  # do not delete this
 
@@ -144,12 +150,12 @@ def main():
     parser = argparse.ArgumentParser(description='PyTorch simple sparse DGP regression')
     parser.add_argument('--mode',
                         type=str,
-                        default='test',
+                        default='train',
                         choices=['train', 'test'],
                         help='train | test')
     parser.add_argument('--model',
                         type=str,
-                        default='grid',
+                        default='additive',
                         choices=['additive', 'grid'],
                         help='additive | grid')
     parser.add_argument('--input-dim',
@@ -239,7 +245,7 @@ def main():
     inputs = np.random.random((1000, args.input_dim))
     outputs = np.sum(inputs, axis=-1)
     inputs = inputs.astype(np.float32)
-    outputs = np.squeeze(outputs).astype(np.float32)
+    outputs = np.expand_dims(outputs, axis=1).astype(np.float32)
 
     train_loader = torch.utils.data.DataLoader(Dataset(inputs, outputs), batch_size=args.batch_size, shuffle=True)
     test_loader = torch.utils.data.DataLoader(Dataset(inputs, outputs), batch_size=args.batch_size, shuffle=True)
@@ -249,8 +255,8 @@ def main():
 
     ############################################################################################################
     model = Regression(input_dim=inputs.shape[-1], output_dim=1,
+                       kernel=LaplaceProductKernel(1.),
                        design_class=HyperbolicCrossDesign,
-                       kernel=LaplaceProductKernel(lengthscale=1.),
                        batch_size=args.batch_size, lr=args.lr, gamma=args.gamma,
                        num_layers=args.num_layers, num_inducing=args.num_inducing, hidden_dim=args.hidden_dim,
                        use_cuda=True, option=args.model)

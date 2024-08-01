@@ -75,8 +75,7 @@ class LinearReparameterization(_BaseVariationalLayer):
                  prior_variance=1,
                  posterior_mu_init=0,
                  posterior_rho_init=-3.0,
-                 bias=True,
-                 return_kl=True):
+                 bias=True):
         super(LinearReparameterization, self).__init__()
 
         self.in_features = in_features
@@ -86,7 +85,6 @@ class LinearReparameterization(_BaseVariationalLayer):
         self.posterior_mu_init = posterior_mu_init,  # mean of weight
         self.posterior_rho_init = posterior_rho_init,  # variance of weight --> sigma = log (1 + exp(rho))
         self.bias = bias
-        self.return_kl = return_kl
 
         self.mu_weight = Parameter(torch.Tensor(out_features, in_features))
         self.rho_weight = Parameter(torch.Tensor(out_features, in_features))
@@ -204,7 +202,7 @@ class LinearReparameterization(_BaseVariationalLayer):
             tmp_result = self.qint_quant[3](tmp_result)  # multiply activation
             weight = self.qint_quant[4](weight)  # add activation
 
-        if self.return_kl:
+        if return_kl:
             if self.mu_bias is not None:
                 kl = kl_weight + kl_bias
             else:
