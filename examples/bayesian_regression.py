@@ -155,17 +155,17 @@ def main():
                         help='train | test')
     parser.add_argument('--model',
                         type=str,
-                        default='additive',
+                        default='grid',
                         choices=['additive', 'grid'],
                         help='additive | grid')
     parser.add_argument('--input-dim',
                         type=int,
-                        default=7,
+                        default=4,
                         metavar='N',
                         help='input dim size for training (default: 14)')
     parser.add_argument('--hidden_dim',
                         type=int,
-                        default=8,
+                        default=7,
                         metavar='N',
                         help='hidden dim of the hidden layers')
     parser.add_argument('--num_layers',
@@ -277,11 +277,17 @@ def main():
                     torch.save(model.model.state_dict(), args.save_dir + "/simple_dgp_regress_additive.pth")
 
         plt.plot(losses)
-        plt.ylim(0, 10)
+        plt.xlabel('Iterations')
+        plt.ylabel('Loss')
+        plt.title('Training Loss')
+
+        figure_dir = os.path.join(dir_name, "figures")
+        if not os.path.exists(figure_dir):
+            os.makedirs(figure_dir)
         if args.model == 'grid':
-            savefigure_path = os.path.join(dir_name, "figures/dgp_regress_training_grid.png")
+            savefigure_path = os.path.join(figure_dir, "dgp_regress_training_grid.png")
         else:
-            savefigure_path = os.path.join(dir_name, "figures/dgp_regress_training_additive.png")
+            savefigure_path = os.path.join(figure_dir, "dgp_regress_training_additive.png")
         plt.savefig(savefigure_path, format='png', dpi=300)
 
     elif args.mode == 'test':
