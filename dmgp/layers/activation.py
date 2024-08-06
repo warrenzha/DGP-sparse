@@ -68,8 +68,8 @@ class TMK(nn.Module):
                  n_level=2,
                  input_lb=-2,
                  input_ub=2,
-                 design_class=HyperbolicCrossDesign,
                  kernel=LaplaceProductKernel(lengthscale=1.),
+                 design_class=HyperbolicCrossDesign,
                  ):
         super().__init__()
 
@@ -96,14 +96,14 @@ class TMK(nn.Module):
         r"""
         Computes the tensor markov kernel activation of :math:`\mathbf x`.
 
-        :param x: (n,d) size tensor, n is the number of the input, d is the dimension of the input
+        :param x: [N, C] size tensor, N is the batch size, C is the feature size of input
         :type x: torch.Tensor.float
 
-        :return: (n,m) size tensor, kernel(input, sparse_grid) @ chol_inv
+        :return: [N, M] size tensor, kernel(input, sparse_grid) @ chol_inv
         """
 
-        out = self.kernel(x, self.design_points)  # [n, m] size tensor
-        out = out @ self.chol_inv  # [n, m] size tensor
+        out = self.kernel(x, self.design_points)  # [N, C] size tensor
+        out = out @ self.chol_inv  # [N, M] size tensor
 
         return out
 
@@ -137,8 +137,8 @@ class AMK(nn.Module):
                  n_level=3,
                  input_lb=-2,
                  input_ub=2,
-                 design_class=HyperbolicCrossDesign,
                  kernel=LaplaceProductKernel(lengthscale=1.),
+                 design_class=HyperbolicCrossDesign,
                  ):
         super().__init__()
 
@@ -158,16 +158,15 @@ class AMK(nn.Module):
         r"""
         Computes the element-wise markov kernel activation of :math:`\mathbf x`.
 
-        :param x: (n,d) size tensor, n is the number of the input, d is the dimension of the input
+        :param x: [N, C] size tensor, N is the batch size, C is the channels of input, L is the sequence length
         :type x: torch.Tensor.float
 
-        :return: (n,m*d) size tensor, kernel(input, sparse_grid) @ chol_inv
+        :return: [N, C*L*M] size tensor, kernel(input, sparse_grid) @ chol_inv
         """
 
-        out = torch.flatten(x, start_dim=1)  # flatten x of size [...,n,d] --> size [...,n*d]
-        out = out.unsqueeze(dim=-1)  # add new dimension, x of size [...,n*d] --> size [...,n*d, 1]
-        out = self.kernel(out, self.design_points)  # [...,n*d, m] size tenosr
-        out = torch.matmul(out, self.chol_inv)  # [..., n*d, m] size tensor
-        out = torch.flatten(out, start_dim=1)
+        out = torch.flatten(x, start_dim=1).unsqueeze(dim=-1)  # reshape x of size [N, C, L] --> size [N, C*L, 1]
+        out = self.kernel(out, self.design_points)  # [N, C*L, M] size tenosr
+        out = torch.matmul(out, self.chol_inv)  # [N, C*L, M] size tensor
+        out = torch.flatten(out, start_dim=1)  # [N, C*L*M] size tensor
 
         return out

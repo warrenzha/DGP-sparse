@@ -60,10 +60,10 @@ class GPLayer(nn.Module):
     is the Cholesky decomposition of the kernel matrix :math:`k(\mathbf{U}, \mathbf{U})`. The algorithm of Cholesky
     decomposition in DMGP can be found in `dmgp.utils.operators.chol_inv`.
 
-    :param in_dim: Input dimensionality of :math:`\mathbf x_1`.
-    :type in_dim: int
-    :param out_dim: Output dimensionality of GP layer.
-    :type out_dim: int
+    :param in_features: Input features of :math:`\mathbf x_1`.
+    :type in_features: int
+    :param out_features: Output features of GP layer.
+    :type out_features: int
     :param num_inducing: Level of inducing points for approximating GP. Default: `3`.
     :type num_inducing: int, optional
     :param input_lb: Lower bound of the input space. You can choose any bound you want and apply normalization in the front. Default: `-2.`.
@@ -80,9 +80,9 @@ class GPLayer(nn.Module):
     :type design_class: class, dmgp.utils.sparse_design.design_class, optional
     """
     def __init__(self,
-                 in_dim,
-                 out_dim,
-                 num_inducing=5,
+                 in_features,
+                 out_features,
+                 num_inducing=2,
                  input_lb=-2,
                  input_ub=2,
                  dense=LinearFlipout,
@@ -91,14 +91,16 @@ class GPLayer(nn.Module):
                  design_class=HyperbolicCrossDesign):
         super(GPLayer, self).__init__()
 
-        self.norm = nn.BatchNorm1d(in_dim, affine=False)
-        self.gp = gp_activation(in_features=in_dim,
-                                n_level=num_inducing,
-                                input_lb=input_lb,
-                                input_ub=input_ub,
-                                design_class=design_class,
-                                kernel=kernel)
-        self.dense = dense(in_features=self.gp.out_features, out_features=out_dim)
+        self.norm = nn.BatchNorm1d(in_features, affine=True)
+        self.gp = gp_activation(
+            in_features=in_features,
+            n_level=num_inducing,
+            input_lb=input_lb,
+            input_ub=input_ub,
+            kernel=kernel,
+            design_class=design_class,
+        )
+        self.dense = dense(in_features=self.gp.out_features, out_features=out_features)
 
     def forward(self, x, normalize=True, return_kl=True):
         r"""
@@ -130,10 +132,10 @@ class DMGP(nn.Module):
     r"""
     A container module to build a Deep GP. This module should contain GPLayer modules, and can also contain other modules as well.
 
-    :param in_dim: Input dimensionality of :math:`\mathbf x_1`.
-    :type in_dim: int
-    :param out_dim: Output dimensionality of GP layer.
-    :type out_dim: int
+    :param in_features: Input features of :math:`\mathbf x_1`.
+    :type in_features: int
+    :param out_features: Output features of GP layer.
+    :type out_features: int
     :param num_layers: Number of hidden layers in DMGP model. Default: `2`.
     :type num_layers: int
     :param hidden_dim: Dimension of hidden layers in DMGP model. Default: `8`.
@@ -148,26 +150,26 @@ class DMGP(nn.Module):
     :type kernel: class, dmgp.kernels, optional
     :param design_class: The design class of choosing inducing points for approximating GP. Default: `HyperbolicCrossDesign`.
     :type design_class: class, dmgp.utils.sparse_design.design_class, optional
-    :param layer_type: The dense linear layer for Gaussian weights. Default: `LinearFlipout`.
-    :type layer_type: class, dmgp.layers.linear, optional
+    :param linear_layer: The dense linear layer for Gaussian weights. Default: `LinearFlipout`.
+    :type linear_layer: class, dmgp.layers.linear, optional
     :param option: The option of DMGP architecture: use sparse grid or additive structure. Default: `additive`.
     :type option: str, optional
     """
     def __init__(self,
-                 input_dim,
-                 output_dim,
+                 in_features,
+                 out_features,
                  num_layers=2,
                  hidden_dim=8,
-                 num_inducing=3,
+                 num_inducing=2,
                  input_lb=-2,
                  input_ub=2,
                  kernel=LaplaceProductKernel(lengthscale=1.),
                  design_class=HyperbolicCrossDesign,
-                 layer_type=LinearFlipout,
+                 linear_layer=LinearFlipout,
                  option='additive'):
         super(DMGP, self).__init__()
 
-        self.embedding = LinearFlipout(input_dim, hidden_dim)
+        self.embedding = LinearFlipout(in_features, hidden_dim)
         activation = AMK if option == 'additive' else TMK
         self.gp_layers = nn.ModuleList(
             [GPLayer(hidden_dim,
@@ -175,14 +177,14 @@ class DMGP(nn.Module):
                      num_inducing,
                      input_lb,
                      input_ub,
-                     dense=layer_type,
+                     dense=linear_layer,
                      gp_activation=activation,
                      kernel=kernel,
                      design_class=design_class,
                      ) for _ in range(num_layers)
              ]
         )
-        self.classifier = LinearFlipout(hidden_dim, output_dim)
+        self.classifier = LinearFlipout(hidden_dim, out_features)
 
     def forward(self, x, normalize=True, return_kl=True):
         r"""

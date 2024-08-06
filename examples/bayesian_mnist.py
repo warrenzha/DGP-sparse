@@ -185,14 +185,14 @@ def main():
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
 
-    model = DMGP(input_dim=784,
-                 output_dim=10,
+    model = DMGP(in_features=784,
+                 out_features=10,
                  num_layers=args.num_layers,
                  num_inducing=args.num_inducing,
                  hidden_dim=args.hidden_dim,
                  kernel=LaplaceProductKernel(1.),
                  design_class=HyperbolicCrossDesign,
-                 layer_type=LinearFlipout,
+                 linear_layer=LinearFlipout,
                  option=args.model).to(device)
 
     print(args.mode)

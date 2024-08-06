@@ -52,8 +52,8 @@ class Regression:
         self.num_mc = num_mc
         self.num_monte_carlo = num_monte_carlo
 
-        self.model = DMGP(input_dim=input_dim,
-                          output_dim=output_dim,
+        self.model = DMGP(in_features=input_dim,
+                          out_features=output_dim,
                           num_layers=num_layers,
                           num_inducing=num_inducing,
                           hidden_dim=hidden_dim,

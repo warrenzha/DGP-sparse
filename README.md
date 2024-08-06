@@ -66,7 +66,7 @@ model = DMGP(
     input_dim = dim,
     output_dim = 1,
     num_layers = 2,
-    num_inducing = 3,
+    num_inducing = 2,
     hidden_dim = 8,
     kernel = LaplaceProductKernel(lengthscale=1.),
     design_class = HyperbolicCrossDesign,
